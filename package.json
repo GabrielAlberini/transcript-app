@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "vite build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
@@ -29,5 +27,22 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10",
     "vite": "^6.3.5"
+  },
+  "description": "Aplicación de transcripción de voz en tiempo real desarrollada como parte del curso de Desarrollo Web con IA (UTN FRBA).",
+  "author": "gabrielalberini",
+  "license": "MIT",
+  "keywords": [
+    "accesibilidad",
+    "inteligencia-artificial",
+    "react",
+    "transcripción",
+    "voz",
+    "inclusión",
+    "utn",
+    "educación"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GabrielAlberini/transcript-app"
   }
 }
