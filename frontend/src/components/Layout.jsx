@@ -48,7 +48,7 @@ export function Layout() {
                   onClick={closeMenu}
                   className="hover:text-orange-600 transition-colors"
                 >
-                  INSTRUCCIONES
+                  Instrucciones
                 </Link>
               </li>
             )}
