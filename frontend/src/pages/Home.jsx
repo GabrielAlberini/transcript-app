@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Monitor, Waves, Download, Eraser } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -8,6 +9,7 @@ function Home() {
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef(null);
   const scrollRef = useRef(null);
+  const { user, token } = useAuth();
 
   useEffect(() => {
     if (!SpeechRecognition) {
@@ -75,21 +77,34 @@ function Home() {
       recognitionRef.current.stop();
       setIsRecording(false);
 
-      // Guardar en localStorage
       if (transcript.trim()) {
-        const now = new Date();
-        const timestamp = now.toLocaleString("es-AR");
-        const id = Date.now();
-
-        const newItem = {
-          id,
-          timestamp,
-          content: transcript.trim(),
-        };
-
-        const previous = JSON.parse(localStorage.getItem("transcriptions")) || [];
-        localStorage.setItem("transcriptions", JSON.stringify([...previous, newItem]));
+        saveTranscriptionToBackend(transcript.trim());
       }
+    }
+  };
+
+  const saveTranscriptionToBackend = async (content) => {
+    if (!user) return alert("Debes iniciar sesión para guardar transcripciones");
+
+    try {
+      const response = await fetch("http://localhost:1234/api/transcriptions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ content })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTranscript("");
+      } else {
+        console.error("❌ Error en la validación:", data.error);
+      }
+    } catch (error) {
+      console.error("❌ Error al conectar con el backend:", error.message);
     }
   };
 
@@ -117,6 +132,11 @@ function Home() {
             <Waves className="w-8 h-8 text-orange-500" />
             Transcripción en Vivo
           </h1>
+          {
+            user && <h1 className="font-extrabold text-green-500 flex items-center justify-center gap-2">
+              Bienvenido, {user}
+            </h1>
+          }
           {isRecording && (
             <p className="text-red-600 font-medium animate-pulse">🔴 Escuchando...</p>
           )}
@@ -125,56 +145,34 @@ function Home() {
           </p>
         </header>
 
-        <div className="overflow-x-auto">
-          <div className="flex gap-4 flex-nowrap justify-center min-w-full pb-2">
-            <button
-              onClick={handleStart}
-              disabled={isRecording}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full disabled:opacity-50 whitespace-nowrap"
-            >
-              <Mic className="w-5 h-5" /> Iniciar (G)
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!isRecording}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full disabled:opacity-50 whitespace-nowrap"
-            >
-              <Square className="w-5 h-5" /> Detener (D)
-            </button>
-            <button
-              onClick={() => setTranscript("")}
-              className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-full whitespace-nowrap"
-            >
-              <Eraser className="w-5 h-5" /> Limpiar texto (L)
-            </button>
-            <button
-              onClick={() => document.documentElement.requestFullscreen()}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full whitespace-nowrap"
-            >
-              <Monitor className="w-5 h-5" /> Pantalla completa (F)
-            </button>
-          </div>
+        <div className="flex gap-4 flex-nowrap justify-center min-w-full pb-2">
+          <button onClick={handleStart} disabled={isRecording || !user} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full disabled:opacity-50 whitespace-nowrap">
+            <Mic className="w-5 h-5" />
+            <span className="hidden sm:inline">Iniciar (G)</span>
+          </button>
+          <button onClick={handleStop} disabled={!isRecording} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full disabled:opacity-50 whitespace-nowrap">
+            <Square className="w-5 h-5" />
+            <span className="hidden sm:inline">Detener (D)</span>
+          </button>
+          <button onClick={() => setTranscript("")} className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-full whitespace-nowrap">
+            <Eraser className="w-5 h-5" />
+            <span className="hidden sm:inline">Limpiar texto (L)</span>
+          </button>
+          <button onClick={() => document.documentElement.requestFullscreen()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full whitespace-nowrap">
+            <Monitor className="w-5 h-5" />
+            <span className="hidden sm:inline">Pantalla completa (F)</span>
+          </button>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="h-80 overflow-y-auto border border-gray-300 rounded-xl p-6 bg-gray-50 shadow-inner"
-          aria-live="polite"
-        >
-          <p
-            className={`text-gray-700 whitespace-pre-wrap leading-relaxed transition-all duration-300 ${isRecording ? "text-2xl md:text-3xl font-medium" : "text-base"
-              }`}
-          >
+        <div ref={scrollRef} className="h-80 overflow-y-auto border border-gray-300 rounded-xl p-6 bg-gray-50 shadow-inner" aria-live="polite">
+          <p className={`text-gray-700 whitespace-pre-wrap leading-relaxed transition-all duration-300 ${isRecording ? "text-2xl md:text-3xl font-medium" : "text-base"}`}>
             {transcript || "🗣️ El texto transcripto aparecerá aquí..."}
           </p>
         </div>
 
         <div>
           {!isRecording && transcript && (
-            <button
-              onClick={handleDownload}
-              className="flex items-center gap-2 bg-black hover:bg-gray-700 text-white px-6 py-3 rounded-full whitespace-nowrap m-auto"
-            >
+            <button onClick={handleDownload} className="flex items-center gap-2 bg-black hover:bg-gray-700 text-white px-6 py-3 rounded-full whitespace-nowrap m-auto">
               <Download className="w-5 h-5" /> Descargar TXT
             </button>
           )}

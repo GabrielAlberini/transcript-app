@@ -1,7 +1,17 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import { Mic } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export function Layout() {
+  const { user, logout } = useAuth()
+
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-orange-50">
       <header className="bg-white shadow-md">
@@ -19,14 +29,44 @@ export function Layout() {
                 Inicio
               </Link>
             </li>
-            <li>
-              <Link
-                to="/historial"
-                className="hover:text-orange-600 transition-colors"
-              >
-                Historial
-              </Link>
-            </li>
+            {
+              user && <>
+                <li>
+                  <Link
+                    to="/historial"
+                    className="hover:text-orange-600 transition-colors"
+                  >
+                    Historial
+                  </Link>
+                </li>
+                <li>
+                  <button className="cursor-pointer hover:text-orange-600"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            }{
+              !user && <>
+                <li>
+                  <Link
+                    to="/register"
+                    className="hover:text-orange-600 transition-colors"
+                  >
+                    Registrate
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/login"
+                    className="hover:text-orange-600 transition-colors"
+                  >
+                    Login
+                  </Link>
+                </li>
+              </>
+            }
           </ul>
         </nav>
       </header>

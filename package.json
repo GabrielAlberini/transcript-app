@@ -1,0 +1,22 @@
+{
+  "name": "transcript-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielAlberini/transcript-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/GabrielAlberini/transcript-app/issues"
+  },
+  "homepage": "https://github.com/GabrielAlberini/transcript-app#readme"
+}

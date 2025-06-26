@@ -1,21 +1,42 @@
 import { useEffect, useState } from "react";
 import { Download, Trash2, FileText } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const History = () => {
   const [history, setHistory] = useState([]);
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("transcriptions")) || [];
-    const reversed = [...stored].reverse(); // hace una copia antes de invertir
-    setHistory(reversed);
-  }, []);
+    if (!user) return;
+
+    fetch("http://localhost:1234/api/transcriptions", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const reversed = [...data.data].reverse();
+          setHistory(reversed);
+        } else {
+          console.error("❌ Error al obtener historial:", data.error);
+        }
+      })
+      .catch(err => console.error("❌ Error de conexión:", err));
+  }, [user]);
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("es-AR");
+  };
 
   const handleDownloadSingle = (item) => {
-    const contenido = `Transcripción descargada el ${item.timestamp}\n\n${item.content}`;
+    const contenido = `Transcripción descargada el ${formatDate(item.createdAt)}\n\n${item.content}`;
     const blob = new Blob([contenido], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `transcripcion-${item.timestamp.replaceAll(" ", "_")}.txt`;
+    a.download = `transcripcion-${item._id}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -23,7 +44,7 @@ const History = () => {
 
   const handleDownloadAll = () => {
     const contenido = history
-      .map((item, index) => `--- Conversación ${index + 1} ---\nFecha: ${item.timestamp}\n\n${item.content}\n`)
+      .map((item, index) => `--- Conversación ${index + 1} ---\nFecha: ${formatDate(item.createdAt)}\n\n${item.content}\n`)
       .join("\n\n==========================\n\n");
     const blob = new Blob([contenido], { type: "text/plain" });
     const a = document.createElement("a");
@@ -34,10 +55,28 @@ const History = () => {
     document.body.removeChild(a);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    if (!user) return;
+
     if (confirm("¿Seguro que querés borrar todo el historial?")) {
-      localStorage.removeItem("transcriptions");
-      setHistory([]);
+      try {
+        const res = await fetch("http://localhost:1234/api/transcriptions", {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setHistory([]);
+        } else {
+          console.error("❌ Error al borrar historial:", data.error);
+        }
+      } catch (err) {
+        console.error("❌ Error de conexión:", err);
+      }
     }
   };
 
@@ -56,14 +95,14 @@ const History = () => {
 
         {history.length > 0 ? (
           <div className="space-y-6 max-h-[500px] overflow-y-auto">
-            {history.map((item, index) => (
+            {history.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="bg-gray-50 border border-gray-300 rounded-xl p-4 shadow-sm space-y-2"
               >
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-gray-600">
-                    Conversación {item.timestamp}
+                    Conversación {formatDate(item.createdAt)}
                   </p>
                   <button
                     onClick={() => handleDownloadSingle(item)}
@@ -103,7 +142,6 @@ const History = () => {
         )}
       </div>
     </div>
-
   );
 };
 
