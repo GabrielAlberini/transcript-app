@@ -98,7 +98,6 @@ JWT_SECRET=tu-clave-supersecreta
 ```bash
 npm run dev-backend      # Ejecuta solo el servidor backend
 npm run dev-frontend     # Ejecuta solo el cliente frontend
-npm start               # Ejecuta ambos simultáneamente
 ```
 
 ### Instalación
@@ -185,7 +184,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 **Gabriel Alberini**
 - GitHub: [@GabrielAlberini](https://github.com/GabrielAlberini)
-- Email: gabrielalberini@example.com
+- Email: gabialberini733@gmail.com
 
 ## 🏫 Institución
 
