@@ -1,22 +1,79 @@
 {
   "name": "transcript-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aplicación de transcripción de voz en tiempo real desarrollada como parte del curso de Desarrollo Web con IA (UTN FRBA). Herramienta inclusiva que permite a personas con discapacidad auditiva acceder a transcripciones en tiempo real de conversaciones, clases y conferencias.",
   "main": "index.js",
   "scripts": {
     "dev-backend": "cd backend && npm run dev",
-    "dev-frontend": "cd frontend && npm run dev"
+    "dev-frontend": "cd frontend && npm run dev",
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "build-frontend": "cd frontend && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GabrielAlberini/transcript-app.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "accesibilidad",
+    "inteligencia-artificial",
+    "react",
+    "transcripción",
+    "voz",
+    "inclusión",
+    "utn",
+    "educación",
+    "web-speech-api",
+    "tiempo-real",
+    "nodejs",
+    "express",
+    "mongodb",
+    "jwt",
+    "tailwindcss",
+    "vite",
+    "fullstack",
+    "discapacidad-auditiva",
+    "herramientas-inclusivas"
+  ],
+  "author": {
+    "name": "Gabriel Alberini",
+    "email": "gabrielalberini@example.com",
+    "url": "https://github.com/GabrielAlberini"
+  },
+  "contributors": [
+    {
+      "name": "Centro de e-Learning UTN FRBA",
+      "url": "https://utn.edu.ar"
+    }
+  ],
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/GabrielAlberini/transcript-app/issues"
   },
-  "homepage": "https://github.com/GabrielAlberini/transcript-app#readme"
+  "homepage": "https://github.com/GabrielAlberini/transcript-app#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "config": {
+    "frontend_port": "5173",
+    "backend_port": "1234"
+  },
+  "directories": {
+    "lib": "./backend/src",
+    "doc": "./docs"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/GabrielAlberini"
+  }
 }
