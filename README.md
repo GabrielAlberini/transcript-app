@@ -1,4 +1,4 @@
-# 🎯 Transcript App - Aplicación de Transcripción de Voz en Tiempo Real
+# Transcript App - Aplicación de transcripción de voz en tiempo real
 
 **Desarrollo Web con Inteligencia Artificial – Centro de e-Learning UTN FRBA**
 
